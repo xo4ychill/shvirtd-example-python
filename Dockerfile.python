@@ -1,0 +1,33 @@
+#  Ваш код здесь #
+# Stage 1: Build (сборщик)
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+# Копируем только файлы, необходимые для установки зависимостей
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+
+# Stage 2: Final (финальный образ)
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Копируем установленные зависимости из builder'а
+COPY --from=builder /root/.local /root/.local
+
+# Копируем весь исходный код
+COPY . .
+
+# Добавляем путь к локальным пакетам в PATH
+ENV PATH=/root/.local/bin:$PATH
+
+# Создаем непривилегированного пользователя для безопасности
+#RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+#USER appuser
+
+# Открываем порт
+EXPOSE 5000
+
+# Запуск приложения
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]

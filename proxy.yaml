@@ -7,7 +7,7 @@ services:
     networks:
         backend: {}
     ports:
-    - "127.0.0.1:8080:8080"
+    - "8080:8080"
     volumes:
     - ./haproxy/reverse/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:rw 
 

@@ -1,0 +1,60 @@
+# Подключение внешнего файла с прокси-сервисами
+include:
+  - proxy.yaml
+
+services:
+  # Сервис веб-приложения
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    # Альтернатива: использовать образ из Yandex Cloud
+    # image: cr.yandex/<registry_id>/test-app:latest
+    container_name: web
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.20.0.5
+    environment:
+      # Переменные для подключения к БД (используем сетевое имя сервиса)
+      - DB_HOST=${DB_HOST:-db}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
+    depends_on:
+      - db
+
+  # Сервис базы данных MySQL
+  db:
+    image: mysql:8
+    container_name: db
+    restart: always
+    networks:
+      backend:
+        ipv4_address: 172.20.0.10
+    environment:
+      # Секретные переменные из .env файла
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Определение сетей
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+# Определение томов
+volumes:
+  mysql-data:
+    driver: local
