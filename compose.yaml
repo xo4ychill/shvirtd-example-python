@@ -8,8 +8,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-    # Альтернатива: использовать образ из Yandex Cloud
-    # image: cr.yandex/<registry_id>/test-app:latest
     container_name: web
     restart: always
     networks:
