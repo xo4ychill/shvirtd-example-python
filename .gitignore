@@ -1,0 +1,53 @@
+# __Python artifacts__
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# __Virtual Environments__
+venv/
+ENV/
+env/
+.venv/
+.pytest_cache/
+
+# __IDE__
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# __Secrets__
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+credentials.json
+
+# __Docker__
+!Dockerfile.python
+!compose.yaml
+!.dockerignore
+*.log
+
+# __OS__
+.DS_Store
+Thumbs.db
+
+# __Build__
+dist/
+build/
+*.tar.gz
+*.zip
+
+# __Notes__
+*.tmp
+*.bak

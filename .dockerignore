@@ -1,0 +1,67 @@
+# __Python__
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# __Virtual Environment__
+venv/
+ENV/
+env/
+.venv/
+
+# __IDE__
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# __Secrets & Environment__
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+
+# __Git__
+.git/
+.gitignore
+*.log
+
+# __Docker__
+Dockerfile.*
+!Dockerfile.python
+docker-compose*.yaml
+*.md
+
+# __Tests & Docs__
+tests/
+docs/
+*.md
+!README.md
+
+# __OS__
+.DS_Store
+Thumbs.db
+
+# __Build artifacts__
+*.tar.gz
+*.zip
