@@ -14,7 +14,7 @@ if [ ! -d "shvirtd-example-python" ]; then
     # Вариант 1: публичный доступ
     git clone https://github.com/xo4ychill/shvirtd-example-python.git
     # Вариант 2: с токеном (токен передаётся через переменную окружения)
-    # git clone https://${GH_TOKEN}@github.com/<your-username>/shvirtd-example-python.git
+    # git clone https://${GH_TOKEN}@github.com/xo4ychill/shvirtd-example-python.git
 else
     echo "Обновление репозитория..."
     cd shvirtd-example-python
