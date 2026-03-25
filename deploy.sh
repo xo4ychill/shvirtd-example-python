@@ -1,7 +1,6 @@
 #!/bin/bash
 # deploy.sh - Скрипт развёртывания проекта на ВМ
 
-
 set -e
 
 # Параметры по умолчанию 
@@ -53,10 +52,10 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Проверка переменных
-: "${MYSQL_ROOT_PASSWORD:?Ошибка: необходимо установить MYSQL_ROOT_PASSWORD. Пример: export MYSQL_ROOT_PASSWORD='ваш_пароль'}"
-: "${MYSQL_DATABASE:?Ошибка: необходимо установить MYSQL_DATABASE. Пример: export MYSQL_DATABASE='имя_базы'}"
-: "${MYSQL_USER:?Ошибка: необходимо установить MYSQL_USER. Пример: export MYSQL_USER='пользователь'}"
-: "${MYSQL_PASSWORD:?Ошибка: необходимо установить MYSQL_PASSWORD. Пример: export MYSQL_PASSWORD='пароль_пользователя'}"
+#: "${MYSQL_ROOT_PASSWORD:?Ошибка: необходимо установить MYSQL_ROOT_PASSWORD. Пример: export MYSQL_ROOT_PASSWORD='ваш_пароль'}"
+#: "${MYSQL_DATABASE:?Ошибка: необходимо установить MYSQL_DATABASE. Пример: export MYSQL_DATABASE='имя_базы'}"
+#: "${MYSQL_USER:?Ошибка: необходимо установить MYSQL_USER. Пример: export MYSQL_USER='пользователь'}"
+#: "${MYSQL_PASSWORD:?Ошибка: необходимо установить MYSQL_PASSWORD. Пример: export MYSQL_PASSWORD='пароль_пользователя'}"
 
 # Переход в директорию
 mkdir -p "$DEPLOY_DIR" || { echo "❌ Ошибка: не удалось создать директорию $DEPLOY_DIR"; exit 1; }
