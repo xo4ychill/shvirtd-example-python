@@ -52,8 +52,3 @@ build/
 # __Notes__
 *.tmp
 *.bak
-
-# __Backup__
-/backup/
-*.sql
-*.sql.gz

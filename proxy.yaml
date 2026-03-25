@@ -2,7 +2,6 @@ version: '3.8'
 services:
 
   reverse-proxy:
-    container_name: reverse-proxy
     image: haproxy:2.4
     restart: always
     networks:
@@ -13,7 +12,6 @@ services:
     - ./haproxy/reverse/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:rw 
 
   ingress-proxy:
-    container_name: ingress-proxy
     image: nginx:latest
     restart: always
     network_mode: host
@@ -23,7 +21,6 @@ services:
 
 networks:
   backend:
-    name: backend
     driver: bridge
     ipam:
      config:

@@ -5,29 +5,16 @@ set -e  # Выход при ошибке
 
 echo "=== Начало развертывания ==="
 
-# Установка docker (если нет)
-if ! command -v docker &> /dev/null; then
-    echo "Установка Docker..."
-    apt update
-    apt install -y docker.io docker-compose-plugin git
-    systemctl enable docker
-    systemctl start docker
-fi
-
-# Проверка переменных
-: "${MYSQL_ROOT_PASSWORD:?Need to set MYSQL_ROOT_PASSWORD}"
-: "${MYSQL_DATABASE:?Need to set MYSQL_DATABASE}"
-: "${MYSQL_USER:?Need to set MYSQL_USER}"
-: "${MYSQL_PASSWORD:?Need to set MYSQL_PASSWORD}"
-
 # Переход в целевую директорию
-mkdir -p /opt
-cd /opt
+cd /opt || mkdir -p /opt && cd /opt
 
-# Клонирование 
+# Клонирование форк-репозитория (используем переменные для токена)
 if [ ! -d "shvirtd-example-python" ]; then
     echo "Клонирование репозитория..."
-     git clone https://github.com/xo4ychill/shvirtd-example-python.git
+    # Вариант 1: публичный доступ
+    git clone https://github.com/xo4ychill/shvirtd-example-python.git
+    # Вариант 2: с токеном (токен передаётся через переменную окружения)
+    # git clone https://${GH_TOKEN}@github.com/xo4ychill/shvirtd-example-python.git
 else
     echo "Обновление репозитория..."
     cd shvirtd-example-python
