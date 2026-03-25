@@ -65,13 +65,18 @@ sleep 30
 
 # Проверка доступности
 echo "Проверка доступности сервиса..."
-if curl -sf http://127.0.0.1:8090 > /dev/null; then
-    echo "✅ Сервис успешно запущен!"
-    curl -L http://127.0.0.1:8090
-else
-    echo "❌ Ошибка запуска сервиса"
-    docker compose logs web
-    exit 1
-fi
+echo "Ожидание запуска..."
+for i in {1..10}; do
+    if curl -sf http://127.0.0.1:8090 > /dev/null; then
+        echo "✅ Сервис работает"
+        curl -L http://127.0.0.1:8090
+        exit 0
+    fi
+    sleep 5
+done
+
+echo "❌ Сервис не запустился"
+
+docker compose logs web
 
 echo "=== Развертывание завершено ==="
