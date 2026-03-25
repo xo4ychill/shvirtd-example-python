@@ -17,8 +17,7 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   db:
     image: mysql:8
