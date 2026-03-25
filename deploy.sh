@@ -1,4 +1,5 @@
 #!/bin/bash
+# deploy.sh - Скрипт развертывания проекта на ВМ
 
 set -e
 
@@ -7,8 +8,12 @@ echo "=== Начало развертывания ==="
 # Установка docker (если нет)
 if ! command -v docker &> /dev/null; then
     echo "Установка Docker..."
-    apt update
-    apt install -y docker.io docker-compose-plugin git
+    sudo apt update
+    sudo apt install -y ca-certificates gnupg curl git
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
     systemctl enable docker
     systemctl start docker
 fi
