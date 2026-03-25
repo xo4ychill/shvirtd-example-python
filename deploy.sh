@@ -48,6 +48,7 @@ if ! command -v docker &> /dev/null; then
     sudo systemctl enable docker
     sudo systemctl start docker
     sudo usermod -aG docker $USER
+    newgrp docker
     echo "✅ Docker установлен. Перезалогиньтесь для применения прав группы docker."
 fi
 
