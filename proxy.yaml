@@ -21,6 +21,7 @@ services:
 
 networks:
   backend:
+    name: backend
     driver: bridge
     ipam:
      config:

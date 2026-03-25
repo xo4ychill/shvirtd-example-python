@@ -1,41 +1,31 @@
-# Подключение внешнего файла с прокси-сервисами
 include:
   - proxy.yaml
 
 services:
-  # Сервис веб-приложения
   web:
     build:
       context: .
       dockerfile: Dockerfile.python
-    container_name: web
+    container_name: web 
     restart: always
     networks:
       backend:
         ipv4_address: 172.20.0.5
-    environment:
-      # Переменные для подключения к БД (используем сетевое имя сервиса)
-      - DB_HOST=${DB_HOST:-db}
-      - DB_USER=${MYSQL_USER}
-      - DB_PASSWORD=${MYSQL_PASSWORD}
-      - DB_NAME=${MYSQL_DATABASE}
+    env_file:
+      - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
-  # Сервис базы данных MySQL
   db:
-    image: mysql:8
     container_name: db
+    image: mysql:8
     restart: always
+    env_file:
+      - .env
     networks:
       backend:
         ipv4_address: 172.20.0.10
-    environment:
-      # Секретные переменные из .env файла
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -44,15 +34,13 @@ services:
       timeout: 5s
       retries: 5
 
-# Определение сетей
 networks:
   backend:
+    name: backend
     driver: bridge
     ipam:
       config:
         - subnet: 172.20.0.0/24
 
-# Определение томов
 volumes:
   mysql-data:
-    driver: local
