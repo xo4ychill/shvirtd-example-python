@@ -1,31 +1,44 @@
 #!/bin/bash
-# deploy.sh - Скрипт развертывания проекта на ВМ
 
-set -e  # Выход при ошибке
+set -e
 
 echo "=== Начало развертывания ==="
 
-# Переход в целевую директорию
-cd /opt || mkdir -p /opt && cd /opt
+# Установка docker (если нет)
+if ! command -v docker &> /dev/null; then
+    echo "Установка Docker..."
+    apt update
+    apt install -y docker.io docker-compose-plugin git
+    systemctl enable docker
+    systemctl start docker
+fi
 
-# Клонирование форк-репозитория (используем переменные для токена)
+# Проверка переменных
+: "${MYSQL_ROOT_PASSWORD:?Need to set MYSQL_ROOT_PASSWORD}"
+: "${MYSQL_DATABASE:?Need to set MYSQL_DATABASE}"
+: "${MYSQL_USER:?Need to set MYSQL_USER}"
+: "${MYSQL_PASSWORD:?Need to set MYSQL_PASSWORD}"
+
+# Переход в директорию
+mkdir -p /opt
+cd /opt
+
+# Клонирование
 if [ ! -d "shvirtd-example-python" ]; then
     echo "Клонирование репозитория..."
-    # Вариант 1: публичный доступ
     git clone https://github.com/xo4ychill/shvirtd-example-python.git
-    # Вариант 2: с токеном (токен передаётся через переменную окружения)
-    # git clone https://${GH_TOKEN}@github.com/xo4ychill/shvirtd-example-python.git
 else
     echo "Обновление репозитория..."
     cd shvirtd-example-python
     git pull origin main
+    cd ..
 fi
 
-cd /opt/shvirtd-example-python
+cd shvirtd-example-python
 
-# Создание .env файла если отсутствует (секреты из переменных окружения)
+# Создание .env
 if [ ! -f ".env" ]; then
-    echo "Создание .env файла..."
+    echo "Создание .env..."
     cat > .env << EOF
 MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -35,12 +48,9 @@ EOF
     chmod 600 .env
 fi
 
-# Остановка старых контейнеров
-echo "Остановка старых контейнеров..."
-docker compose down --remove-orphans 2>/dev/null || true
-
-# Сборка и запуск
-echo "Запуск проекта..."
+# Перезапуск
+echo "Перезапуск контейнеров..."
+docker compose down --remove-orphans || true
 docker compose up -d --build
 
 # Ожидание запуска сервисов
