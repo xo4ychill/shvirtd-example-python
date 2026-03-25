@@ -1,54 +1,66 @@
-# __Python artifacts__
+# ------------------------
+# 🔐 Secrets
+# ------------------------
+.env
+*.env
+*.env.*
+/opt/.mysql_secrets
+
+# ------------------------
+# 🐍 Python
+# ------------------------
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-*.egg-info/
-.eggs/
 
-# __Virtual Environments__
+# виртуальные окружения
 venv/
-ENV/
-env/
 .venv/
+env/
+
+# ------------------------
+# 🧪 Pytest / coverage
+# ------------------------
 .pytest_cache/
+.coverage
+htmlcov/
 
-# __IDE__
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.project
-.pydevproject
+# ------------------------
+# 📦 Build / dist
+# ------------------------
+build/
+dist/
+*.egg-info/
 
-# __Secrets__
-.env
-.env.local
-.env.*.local
-*.secrets
-*.pem
-*.key
-*.crt
-credentials.json
-
-# __Docker__
-!Dockerfile.python
-!compose.yaml
-!.dockerignore
+# ------------------------
+# 🐳 Docker
+# ------------------------
 *.log
+docker-compose.override.yml
 
-# __OS__
+# ------------------------
+# 🗄️ Backup файлы
+# ------------------------
+backup/
+*.sql
+*.sql.gz
+
+# ------------------------
+# 🖥️ OS мусор
+# ------------------------
 .DS_Store
 Thumbs.db
 
-# __Build__
-dist/
-build/
-*.tar.gz
-*.zip
+# ------------------------
+# 🧰 IDE / Editor
+# ------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# __Notes__
-*.tmp
-*.bak
+# ------------------------
+# 🔧 Logs
+# ------------------------
+*.log
+/var/log/
