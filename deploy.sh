@@ -16,6 +16,7 @@ if ! command -v docker &> /dev/null; then
     sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
     systemctl enable docker
     systemctl start docker
+    usermod -aG docker $USER
 fi
 
 # Проверка переменных
