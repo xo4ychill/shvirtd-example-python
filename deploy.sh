@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy.sh - скрипт развёртывания
+# deploy.sh 
 
 set -e
 
@@ -31,7 +31,8 @@ if ! command -v docker &> /dev/null; then
 
     sudo usermod -aG docker $USER
 
-    echo "⚠️ ВАЖНО: Выполни 'newgrp docker' или перелогинься!"
+    echo "⚠️ Выполни 'newgrp docker' или перелогинься и запусти скрипт снова"
+    exit 1
 fi
 
 # -------------------------------
@@ -57,6 +58,19 @@ fi
 cd shvirtd-example-python
 
 # -------------------------------
+# Проверка .env
+# -------------------------------
+if [ ! -f ".env" ]; then
+    echo "❌ Файл .env не найден!"
+    exit 1
+fi
+
+echo "🔐 Загрузка переменных окружения..."
+set -a
+source .env
+set +a
+
+# -------------------------------
 # Запуск контейнеров
 # -------------------------------
 echo "🐳 Перезапуск контейнеров..."
@@ -64,7 +78,7 @@ docker compose down --remove-orphans || true
 docker compose up -d --build
 
 # -------------------------------
-# Проверка MySQL
+# Проверка MySQL (без пароля!)
 # -------------------------------
 echo "⏳ Ожидание MySQL..."
 
@@ -75,18 +89,16 @@ if [ -z "$DB_CONTAINER" ]; then
     exit 1
 fi
 
-for i in {1..20}; do
-    if docker exec "$DB_CONTAINER" \
-        mysqladmin ping -h localhost -u root -p"$MYSQL_ROOT_PASSWORD" --silent; then
-        echo "✅ MySQL готов"
+for i in {1..30}; do
+    if docker exec "$DB_CONTAINER" mysqladmin ping --silent > /dev/null 2>&1; then
+        echo "✅ MySQL запущен"
         break
     fi
-    echo "⏳ Ждём MySQL ($i/20)..."
+    echo "⏳ Ждём MySQL ($i/30)..."
     sleep 2
 done
 
-if ! docker exec "$DB_CONTAINER" \
-    mysqladmin ping -h localhost -u root -p"$MYSQL_ROOT_PASSWORD" --silent; then
+if ! docker exec "$DB_CONTAINER" mysqladmin ping --silent > /dev/null 2>&1; then
     echo "❌ MySQL не запустился"
     docker compose logs db
     exit 1
@@ -97,25 +109,32 @@ fi
 # -------------------------------
 echo "⏳ Проверка web-сервиса..."
 
-for i in {1..15}; do
+WEB_OK=false
+
+for i in {1..20}; do
     if curl -sf --max-time 3 http://127.0.0.1:8090 > /dev/null; then
+        WEB_OK=true
         echo "✅ Сервис доступен!"
         echo "📡 Ответ:"
         curl -L http://127.0.0.1:8090
         echo ""
-        echo "=== 🎉 Развертывание завершено успешно ==="
-        exit 0
+        break
     fi
-    echo "⏳ Ждём web ($i/15)..."
+    echo "⏳ Ждём web ($i/20)..."
     sleep 3
 done
 
 # -------------------------------
-# Ошибка
+# Проверка результата
 # -------------------------------
-echo "❌ Сервис не запустился"
-echo "📜 Логи web:"
-docker compose logs web
+if [ "$WEB_OK" = false ]; then
+    echo "❌ Сервис не запустился"
+    echo "📜 Логи web:"
+    docker compose logs web
 
-echo "=== ❌ Развертывание завершено с ошибкой ==="
-exit 1
+    echo "=== ❌ Развертывание завершено с ошибкой ==="
+    exit 1
+fi
+
+echo "=== 🎉 Развертывание завершено успешно ==="
+exit 0
