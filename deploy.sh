@@ -58,6 +58,18 @@ fi
 cd shvirtd-example-python
 
 # -------------------------------
+# Права на backup.sh
+# -------------------------------
+echo "🔧 Установка прав на backup.sh..."
+
+if [ -f "backup.sh" ]; then
+    chmod +x backup.sh
+    echo "✅ backup.sh готов к выполнению"
+else
+    echo "⚠️ backup.sh не найден"
+fi
+
+# -------------------------------
 # Проверка .env
 # -------------------------------
 if [ ! -f ".env" ]; then
