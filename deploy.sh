@@ -1,5 +1,4 @@
 #!/bin/bash
-# deploy.sh 
 
 set -e
 
@@ -58,6 +57,19 @@ fi
 cd shvirtd-example-python
 
 # -------------------------------
+# Проверка .env
+# -------------------------------
+if [ ! -f ".env" ]; then
+    echo "❌ Файл .env не найден!"
+    exit 1
+fi
+
+echo "🔐 Загрузка переменных..."
+set -a
+source .env
+set +a
+
+# -------------------------------
 # Права на backup.sh
 # -------------------------------
 echo "🔧 Установка прав на backup.sh..."
@@ -70,17 +82,55 @@ else
 fi
 
 # -------------------------------
-# Проверка .env
+# Настройка systemd timer
 # -------------------------------
-if [ ! -f ".env" ]; then
-    echo "❌ Файл .env не найден!"
-    exit 1
-fi
+echo "⏰ Настройка systemd timer..."
 
-echo "🔐 Загрузка переменных окружения..."
-set -a
-source .env
-set +a
+SERVICE_FILE="/etc/systemd/system/backup.service"
+TIMER_FILE="/etc/systemd/system/backup.timer"
+
+# Service
+sudo tee "$SERVICE_FILE" > /dev/null <<EOF
+[Unit]
+Description=MySQL Backup Script
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/shvirtd-example-python/backup.sh
+
+Restart=on-failure
+RestartSec=10s
+StartLimitIntervalSec=60
+StartLimitBurst=3
+EOF
+
+# Timer
+sudo tee "$TIMER_FILE" > /dev/null <<EOF
+[Unit]
+Description=Run MySQL Backup every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=10s
+Persistent=true
+Unit=backup.service
+
+[Install]
+WantedBy=timers.target
+EOF
+
+# Применение systemd
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable --now backup.timer
+
+echo "✅ systemd timer настроен"
+
+echo "📋 Активные таймеры:"
+systemctl list-timers --all | grep backup || true
 
 # -------------------------------
 # Запуск контейнеров
@@ -90,7 +140,7 @@ docker compose down --remove-orphans || true
 docker compose up -d --build
 
 # -------------------------------
-# Проверка MySQL (без пароля!)
+# Проверка MySQL
 # -------------------------------
 echo "⏳ Ожидание MySQL..."
 
@@ -137,7 +187,7 @@ for i in {1..20}; do
 done
 
 # -------------------------------
-# Проверка результата
+# Финальная проверка
 # -------------------------------
 if [ "$WEB_OK" = false ]; then
     echo "❌ Сервис не запустился"
