@@ -16,6 +16,7 @@ if ! command -v docker &> /dev/null; then
     sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     systemctl enable docker
     systemctl start docker
+    sudo chown -R 1000:1000 /opt
     sudo usermod -aG docker $USER
 fi
 
@@ -58,7 +59,7 @@ echo "Ожидание запуска сервисов..."
 sleep 30
 
 # Проверка доступности
-echo "Проверка доступности сервиса..."
+echo "Проверка доступности сервиса ..."
 
 for i in {1..10}; do
     if curl -sf http://127.0.0.1:8090 > /dev/null; then
