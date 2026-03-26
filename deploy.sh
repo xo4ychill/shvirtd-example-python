@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy.sh - финальный скрипт развёртывания
+# deploy.sh - скрипт развёртывания
 
 set -e
 
@@ -33,14 +33,6 @@ if ! command -v docker &> /dev/null; then
 
     echo "⚠️ ВАЖНО: Выполни 'newgrp docker' или перелогинься!"
 fi
-
-# -------------------------------
-# Проверка переменных
-# -------------------------------
-: "${MYSQL_ROOT_PASSWORD:?❌ Укажи MYSQL_ROOT_PASSWORD}"
-: "${MYSQL_DATABASE:?❌ Укажи MYSQL_DATABASE}"
-: "${MYSQL_USER:?❌ Укажи MYSQL_USER}"
-: "${MYSQL_PASSWORD:?❌ Укажи MYSQL_PASSWORD}"
 
 # -------------------------------
 # Подготовка директории
