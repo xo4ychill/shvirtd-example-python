@@ -1,5 +1,5 @@
 #!/bin/bash
-# Подключения через schnitzler/mysqldump и fallback на mysql:8
+# Подключение через schnitzler/mysqldump и fallback на mysql:8
 # Если  schnitzler/mysqldump не может подключиться к MySQL (нет поддерки caching_sha2_password), запускаем mysqldump из mysql:8
 
 set -euo pipefail
